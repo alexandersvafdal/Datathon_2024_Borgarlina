@@ -1,14 +1,12 @@
 import faicons as fa
-import sys
-import os
 from ipyleaflet import Map, Marker, LayerGroup, Circle, Icon, AwesomeIcon, DivIcon, basemaps, GeoJSON
 
 import matplotlib.pyplot as plt
 
 from pandas.core.frame import functools
 # Load data and compute static values
-from borgarlina3_leaflet import create_map, load_and_preprocess_data
-from shared import app_dir, tips
+from borgarlina3_leaflet import load_and_preprocess_data
+from shared import app_dir
 from shinywidgets import render_widget 
 
 from shiny import reactive, render
@@ -18,8 +16,6 @@ from shiny.express import input, ui
 from data_processing.data_provider import Data_provider
 
 initBackend = Data_provider()
-def getScore(cords):
-    pass
 
 def generateStops(year):
     geojson_file = f"given_data/cityline_geojson/cityline_{year}.geojson"
@@ -30,7 +26,6 @@ def generateStops(year):
     gpdStops, _, all_small_areas = load_and_preprocess_data(geojson_file, pop_file, smallarea_file, dwellings_file)
 
     points = []
-    stopData = {}
     # Assuming your GeoDataFrame is named 'gdf'
     for _, row in gpdStops.iterrows():
         point = row["geometry"]
@@ -106,13 +101,6 @@ with ui.layout_columns(col_widths=[8, 4]):
         def map():
             return Map(
                 basemap=basemaps.CartoDB.Positron)  
-    
-    
-    
-        
-
-
-    
             
     with ui.layout_column_wrap(width="450px"):
             with ui.layout_columns(col_widths=(6, 6), min_height="450px"):
@@ -333,11 +321,6 @@ with ui.layout_columns(col_widths=[8, 4]):
                             
                             # Return the figure for rendering in Shiny
                             return fig
-                        
-                    
-
-                        
-
         
 ui.include_css(app_dir / "styles.css")
 
@@ -459,7 +442,7 @@ def reset_marker(index, **kwargs):
 
 @reactive.effect
 def centerMap():
-    mapCenter = input.reset()
+    _ = input.reset()
     map.widget.zoom = 11.8
     map.widget.center = (64.11,-21.90)
 
